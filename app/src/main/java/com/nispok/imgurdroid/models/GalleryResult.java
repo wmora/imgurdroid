@@ -15,14 +15,14 @@ public class GalleryResult implements Serializable {
     private String id;
     private String title;
     private String description;
-    private int datetime;
+    private long datetime;
     private String type;
     private boolean animated;
     private int width;
     private int height;
     private int size;
-    private int views;
-    private int bandwidth;
+    private long views;
+    private long bandwidth;
     private String deletehash;
     private String link;
     private String gifv;
@@ -83,11 +83,11 @@ public class GalleryResult implements Serializable {
     /**
      * @return Time inserted into the gallery, epoch time
      */
-    public int getDatetime() {
+    public long getDatetime() {
         return datetime;
     }
 
-    public void setDatetime(int datetime) {
+    public void setDatetime(long datetime) {
         this.datetime = datetime;
     }
 
@@ -149,18 +149,18 @@ public class GalleryResult implements Serializable {
     /**
      * @return The number of image views
      */
-    public int getViews() {
+    public long getViews() {
         return views;
     }
 
-    public void setViews(int views) {
+    public void setViews(long views) {
         this.views = views;
     }
 
     /**
      * @return Bandwidth consumed by the image in bytes
      */
-    public int getBandwidth() {
+    public long getBandwidth() {
         return bandwidth;
     }
 
