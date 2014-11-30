@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +21,13 @@ import com.nispok.imgurdroid.services.Imgur;
 
 public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
+    private static final String TAG = HomeFragment.class.getSimpleName();
     private static final String SAVED_GALLERY_DATA = "SAVED_GALLERY_DATA";
 
     private SwipeRefreshLayout galleryContainer;
     private RecyclerView gallery;
     private GalleryAdapter galleryAdapter;
+    private StaggeredGridLayoutManager layoutManager;
 
     private Gallery galleryData = new Gallery();
 
@@ -61,11 +64,29 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     private void loadGalleryView(View container) {
         gallery = (RecyclerView) container.findViewById(R.id.gallery);
-        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2,
-                StaggeredGridLayoutManager.VERTICAL);
+        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         gallery.setLayoutManager(layoutManager);
         galleryAdapter = new GalleryAdapter(galleryData.getData());
         gallery.setAdapter(galleryAdapter);
+        gallery.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int totalItemCount = layoutManager.getItemCount();
+                int[] itemPositions = new int[layoutManager.getSpanCount()];
+                layoutManager.findLastVisibleItemPositions(itemPositions);
+                for (int itemPosition : itemPositions) {
+                    if (itemPosition >= (totalItemCount - 1)) {
+                        Log.d(TAG, "End has been reached, load more");
+                    }
+                }
+            }
+        });
     }
 
     @Override
