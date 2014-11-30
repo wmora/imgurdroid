@@ -1,20 +1,145 @@
 package com.nispok.imgurdroid.services;
 
+import com.nispok.imgurdroid.BuildConfig;
+import com.nispok.imgurdroid.events.BusProvider;
+import com.nispok.imgurdroid.events.ImgurServiceEvents;
 import com.nispok.imgurdroid.models.Gallery;
 
 import retrofit.Callback;
+import retrofit.RequestInterceptor;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import retrofit.http.GET;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
-interface Imgur {
+public class Imgur {
 
-    @GET("/gallery/{section}/{sort}/{window}/{page}")
-    void getGallery(@Path("section") String section,
-                    @Path("sort") String sort,
-                    @Path("window") String window,
-                    @Path("page") int page,
-                    @Query("showViral") boolean showViral,
-                    Callback<Gallery> callback);
+    public static class Section {
+        public static final String HOT = "hot";
+        public static final String TOP = "top";
+        public static final String USER = "user";
+    }
+
+    public static class Sort {
+        public static final String VIRAL = "viral";
+        public static final String TOP = "top";
+        public static final String TIME = "time";
+        public static final String RISING = "rising";
+    }
+
+    public static class Window {
+        public static final String DAY = "day";
+        public static final String WEEK = "week";
+        public static final String MONTH = "month";
+        public static final String YEAR = "year";
+        public static final String ALL = "all";
+    }
+
+    private static RestAdapter restAdapter;
+    private static ImgurService service;
+
+    private Imgur() {
+    }
+
+    /**
+     * Endpoints
+     */
+    private interface ImgurService {
+        @GET("/gallery/{section}/{sort}/{window}/{page}")
+        void getGallery(@Path("section") String section,
+                        @Path("sort") String sort,
+                        @Path("window") String window,
+                        @Path("page") int page,
+                        @Query("showViral") boolean showViral,
+                        ImgurCallback<Gallery> callback);
+    }
+
+    /**
+     * All calls need, at minimum, the client_id for the registered app
+     *
+     * @see <a href="https://api.imgur.com/#register>Register an Application</a>
+     */
+    private static class ImgurRequestInterceptor implements RequestInterceptor {
+        @Override
+        public void intercept(RequestFacade request) {
+            request.addHeader("Authorization", "Client-ID " + BuildConfig.IMGURDROID_CLIENT_ID);
+        }
+    }
+
+    /**
+     * Common {@link retrofit.Callback} for all
+     * {@link com.nispok.imgurdroid.services.Imgur.ImgurService} calls. All request failures will
+     * dispatch an {@link com.nispok.imgurdroid.events.ImgurServiceEvents.ErrorEvent}
+     *
+     * @param <T> the expected request response
+     */
+    private static abstract class ImgurCallback<T> implements Callback<T> {
+        @Override
+        public void success(T result, Response response) {
+            success(result);
+        }
+
+        public abstract void success(T result);
+
+        @Override
+        public void failure(RetrofitError error) {
+            BusProvider.bus().post(new ImgurServiceEvents.ErrorEvent(error));
+        }
+    }
+
+    private static RestAdapter getRestAdapter() {
+
+        if (restAdapter == null) {
+            restAdapter = new RestAdapter.Builder()
+                    .setEndpoint(BuildConfig.IMGUR_API_BASE_URL)
+                    .setRequestInterceptor(new ImgurRequestInterceptor())
+                    .setLogLevel(BuildConfig.RETROFIT_LOGGING)
+                    .build();
+        }
+
+        return restAdapter;
+    }
+
+    private static ImgurService getService() {
+
+        if (service == null) {
+            service = getRestAdapter().create(ImgurService.class);
+        }
+
+        return service;
+    }
+
+    /**
+     * Returns the images in the gallery. For example the main gallery is
+     * <a href="https://api.imgur.com/3/gallery/hot/viral/0.json" />
+     *
+     * @param section   hot | top | user. @see {@link Section}
+     * @param sort      viral | top | time | rising (only available with user section).
+     * @param window    Change the date range of the request if the section is "top", day | week |
+     *                  month | year | all. @see {@link Window}
+     * @param page      integer - the data paging number
+     * @param showViral true | false - Show or hide viral images from the 'user' section. @see
+     *                  {@link Sort}
+     */
+    public static void getGallery(String section, String sort, String window, int page,
+                                  boolean showViral) {
+        getService().getGallery(section, sort, window, page, showViral,
+                new ImgurCallback<Gallery>() {
+                    @Override
+                    public void success(Gallery result) {
+                        BusProvider.bus().post(new ImgurServiceEvents.GallerySuccessEvent(result));
+                    }
+                });
+    }
+
+    /**
+     * Returns the images in the gallery. For example the main gallery is
+     * <a href="https://api.imgur.com/3/gallery/hot/viral/0.json" />
+     */
+    public static void getGallery() {
+        getGallery(Section.HOT, Sort.VIRAL, Window.DAY, 0, true);
+    }
 
 }
