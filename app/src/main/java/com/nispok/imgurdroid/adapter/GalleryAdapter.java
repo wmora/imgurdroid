@@ -84,6 +84,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
         @Override
         public Bitmap transform(Bitmap source) {
             int width = holder.getWidth();
+            if (width <= 0) {
+                return source;
+            }
             Bitmap transformedBitmap = ThumbnailUtils.extractThumbnail(source, width,
                     source.getHeight(), ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
             if (transformedBitmap != source) {
