@@ -444,6 +444,6 @@ public class GalleryResult implements Serializable {
 
     public int getImageHeight() {
         int imageHeight = isAlbum ? coverHeight : height;
-        return height <= 640 ? height : 640;
+        return imageHeight <= 640 ? imageHeight : 640;
     }
 }
