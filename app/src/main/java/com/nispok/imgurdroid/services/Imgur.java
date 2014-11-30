@@ -1,5 +1,8 @@
 package com.nispok.imgurdroid.services;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nispok.imgurdroid.BuildConfig;
 import com.nispok.imgurdroid.events.BusProvider;
 import com.nispok.imgurdroid.events.ImgurServiceEvents;
@@ -10,6 +13,7 @@ import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.converter.GsonConverter;
 import retrofit.http.GET;
 import retrofit.http.Path;
 import retrofit.http.Query;
@@ -92,10 +96,14 @@ public class Imgur {
     private static RestAdapter getRestAdapter() {
 
         if (restAdapter == null) {
+            Gson gson = new GsonBuilder()
+                         .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                         .create();
             restAdapter = new RestAdapter.Builder()
                     .setEndpoint(BuildConfig.IMGUR_API_BASE_URL)
                     .setRequestInterceptor(new ImgurRequestInterceptor())
                     .setLogLevel(BuildConfig.RETROFIT_LOGGING)
+                    .setConverter(new GsonConverter(gson))
                     .build();
         }
 
