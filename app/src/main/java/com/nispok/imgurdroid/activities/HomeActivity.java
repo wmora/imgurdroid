@@ -1,9 +1,10 @@
-package com.nispok.imgurdroid;
+package com.nispok.imgurdroid.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.nispok.imgurdroid.R;
 import com.nispok.imgurdroid.fragments.HomeFragment;
 
 public class HomeActivity extends ActionBarActivity {
