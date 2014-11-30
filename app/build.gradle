@@ -25,9 +25,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField "retrofit.RestAdapter.LogLevel", "RETROFIT_LOGGING", 'retrofit.RestAdapter.LogLevel.FULL'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "retrofit.RestAdapter.LogLevel", "RETROFIT_LOGGING", 'retrofit.RestAdapter.LogLevel.NONE'
         }
     }
 }
