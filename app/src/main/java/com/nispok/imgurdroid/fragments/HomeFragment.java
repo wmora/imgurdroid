@@ -3,33 +3,69 @@ package com.nispok.imgurdroid.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.halfbit.tinybus.Subscribe;
 import com.nispok.imgurdroid.R;
+import com.nispok.imgurdroid.adapter.GalleryAdapter;
 import com.nispok.imgurdroid.events.BusProvider;
 import com.nispok.imgurdroid.events.ImgurServiceEvents;
 import com.nispok.imgurdroid.models.Gallery;
 import com.nispok.imgurdroid.services.Imgur;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private static final String TAG = HomeFragment.class.getSimpleName();
-    private static final String SAVED_GALLERY = "SAVED_GALLERY";
+    private static final String SAVED_GALLERY_DATA = "SAVED_GALLERY_DATA";
 
-    private Gallery gallery;
+    private SwipeRefreshLayout galleryContainer;
+    private RecyclerView gallery;
+    private GalleryAdapter galleryAdapter;
+
+    private Gallery galleryData = new Gallery();
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         if (savedInstanceState != null) {
-            gallery = (Gallery) savedInstanceState.getSerializable(SAVED_GALLERY);
+            galleryData = (Gallery) savedInstanceState.getSerializable(SAVED_GALLERY_DATA);
         }
-        return inflater.inflate(R.layout.fragment_home, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        loadViews(view);
+
+        return view;
+    }
+
+    private void loadViews(View container) {
+        loadGalleryContainerView(container);
+        loadGalleryView(container);
+    }
+
+    private void loadGalleryContainerView(View container) {
+        galleryContainer = (SwipeRefreshLayout) container.findViewById(R.id.gallery_container);
+        galleryContainer.setOnRefreshListener(this);
+    }
+
+    @Override
+    public void onRefresh() {
+        loadGallery();
+    }
+
+    private void loadGalleryView(View container) {
+        gallery = (RecyclerView) container.findViewById(R.id.gallery);
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2,
+                StaggeredGridLayoutManager.VERTICAL);
+        gallery.setLayoutManager(layoutManager);
+        galleryAdapter = new GalleryAdapter(galleryData.getData());
+        gallery.setAdapter(galleryAdapter);
     }
 
     @Override
@@ -42,7 +78,7 @@ public class HomeFragment extends Fragment {
     }
 
     private boolean shouldLoadGallery() {
-        return gallery == null || gallery.getData().isEmpty();
+        return galleryData == null || galleryData.getData().isEmpty();
     }
 
     private void loadGallery() {
@@ -58,16 +94,18 @@ public class HomeFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(SAVED_GALLERY, gallery);
+        outState.putSerializable(SAVED_GALLERY_DATA, galleryData);
     }
 
     @Subscribe
     public void onEvent(ImgurServiceEvents.GallerySuccessEvent event) {
-        gallery = event.getResult();
+        galleryContainer.setRefreshing(false);
+        galleryData = event.getResult();
+        galleryAdapter.setDataset(galleryData.getData());
     }
 
     @Subscribe
     public void onError(ImgurServiceEvents.ErrorEvent event) {
-        Log.d(TAG, event.getResult().toString());
+        galleryContainer.setRefreshing(false);
     }
 }

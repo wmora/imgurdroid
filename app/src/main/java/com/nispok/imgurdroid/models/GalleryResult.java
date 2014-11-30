@@ -436,4 +436,14 @@ public class GalleryResult implements Serializable {
     public void setImages(List<GalleryResult> images) {
         this.images = images;
     }
+
+    public String getImageUrl() {
+        String imageId = isAlbum ? cover : id;
+        return "http://i.imgur.com/" + imageId + "l.jpg";
+    }
+
+    public int getImageHeight() {
+        int imageHeight = isAlbum ? coverHeight : height;
+        return height <= 640 ? height : 640;
+    }
 }
