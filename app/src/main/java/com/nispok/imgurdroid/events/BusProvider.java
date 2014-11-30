@@ -1,12 +1,10 @@
 package com.nispok.imgurdroid.events;
 
-import com.halfbit.tinybus.TinyBus;
-
 public class BusProvider {
 
-    private static TinyBus BUS = new TinyBus();
+    private static ImgurdroidBus BUS = new ImgurdroidBus();
 
-    public static TinyBus bus() {
+    public static ImgurdroidBus bus() {
         return BUS;
     }
 
