@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+def loadString(name) {
+    hasProperty(name) ? "\"${getProperty(name)}\"" : ""
+}
+
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.1"
@@ -10,12 +14,16 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+        buildConfigField "String", "IMGURDROID_CLIENT_ID", "${loadString("IMGURDROID_CLIENT_ID")}"
+        buildConfigField "String", "IMGURDROID_CLIENT_SECRET", "${loadString("IMGURDROID_CLIENT_SECRET")}"
+        buildConfigField "String", "IMGUR_API_BASE_URL", '"https://api.imgur.com/3"'
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -28,4 +36,5 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.2'
     compile 'com.android.support:recyclerview-v7:21.0.2'
+    compile 'com.squareup.retrofit:retrofit:1.8.0'
 }
