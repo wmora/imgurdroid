@@ -16,20 +16,23 @@ import com.nispok.imgurdroid.R;
 import com.nispok.imgurdroid.adapter.GalleryAdapter;
 import com.nispok.imgurdroid.events.BusProvider;
 import com.nispok.imgurdroid.events.ImgurServiceEvents;
+import com.nispok.imgurdroid.listeners.OnGalleryScrollListener;
 import com.nispok.imgurdroid.models.Gallery;
+import com.nispok.imgurdroid.models.GalleryInfo;
 import com.nispok.imgurdroid.services.Imgur;
 
-public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
+        OnGalleryScrollListener.GalleryScrollListener {
 
     private static final String TAG = HomeFragment.class.getSimpleName();
     private static final String SAVED_GALLERY_DATA = "SAVED_GALLERY_DATA";
+    private static final String SAVED_GALLERY_INFO = "SAVED_GALLERY_INFO";
 
     private SwipeRefreshLayout galleryContainer;
-    private RecyclerView gallery;
     private GalleryAdapter galleryAdapter;
-    private StaggeredGridLayoutManager layoutManager;
 
     private Gallery galleryData = new Gallery();
+    private GalleryInfo galleryInfo = new GalleryInfo();
 
     @Nullable
     @Override
@@ -38,6 +41,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         if (savedInstanceState != null) {
             galleryData = (Gallery) savedInstanceState.getSerializable(SAVED_GALLERY_DATA);
+            galleryInfo = (GalleryInfo) savedInstanceState.getSerializable(SAVED_GALLERY_INFO);
         }
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
@@ -55,6 +59,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private void loadGalleryContainerView(View container) {
         galleryContainer = (SwipeRefreshLayout) container.findViewById(R.id.gallery_container);
         galleryContainer.setOnRefreshListener(this);
+        galleryContainer.setRefreshing(false);
     }
 
     @Override
@@ -63,30 +68,13 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void loadGalleryView(View container) {
-        gallery = (RecyclerView) container.findViewById(R.id.gallery);
-        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        RecyclerView gallery = (RecyclerView) container.findViewById(R.id.gallery);
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2,
+                StaggeredGridLayoutManager.VERTICAL);
         gallery.setLayoutManager(layoutManager);
-        galleryAdapter = new GalleryAdapter(galleryData.getData());
+        galleryAdapter = new GalleryAdapter();
         gallery.setAdapter(galleryAdapter);
-        gallery.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                int totalItemCount = layoutManager.getItemCount();
-                int[] itemPositions = new int[layoutManager.getSpanCount()];
-                layoutManager.findLastVisibleItemPositions(itemPositions);
-                for (int itemPosition : itemPositions) {
-                    if (itemPosition >= (totalItemCount - 1)) {
-                        Log.d(TAG, "End has been reached, load more");
-                    }
-                }
-            }
-        });
+        gallery.setOnScrollListener(new OnGalleryScrollListener(layoutManager, this));
     }
 
     @Override
@@ -103,7 +91,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void loadGallery() {
-        Imgur.getGallery();
+        galleryContainer.setRefreshing(true);
+        Imgur.getGallery(galleryInfo);
     }
 
     @Override
@@ -116,17 +105,28 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(SAVED_GALLERY_DATA, galleryData);
+        outState.putSerializable(SAVED_GALLERY_INFO, galleryInfo);
     }
 
     @Subscribe
-    public void onEvent(ImgurServiceEvents.GallerySuccessEvent event) {
+    public void onGallerySuccess(ImgurServiceEvents.GallerySuccessEvent event) {
         galleryContainer.setRefreshing(false);
+        galleryInfo.setPage(galleryInfo.getPage() + 1);
         galleryData = event.getResult();
-        galleryAdapter.setDataset(galleryData.getData());
+        galleryAdapter.add(galleryData.getData());
     }
 
     @Subscribe
     public void onError(ImgurServiceEvents.ErrorEvent event) {
+        Log.e(TAG, event.getResult().toString());
         galleryContainer.setRefreshing(false);
     }
+
+    @Override
+    public void onScrollEndReached() {
+        if (!galleryContainer.isRefreshing()) {
+            loadGallery();
+        }
+    }
+
 }

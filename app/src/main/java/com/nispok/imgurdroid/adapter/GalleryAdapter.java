@@ -20,13 +20,17 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
 
     private List<GalleryResult> dataset = new ArrayList<>();
 
-    public GalleryAdapter(List<GalleryResult> dataset) {
-        this.dataset = dataset;
+    public GalleryAdapter() {
+        // Nothing to do here
     }
 
-    public void setDataset(List<GalleryResult> dataset) {
-        this.dataset = dataset;
-        notifyDataSetChanged();
+    /**
+     * Adds all items to the end of the list
+     * @param items items to be inserted
+     */
+    public void add(List<GalleryResult> items) {
+        dataset.addAll(items);
+        notifyItemRangeInserted(dataset.size() - items.size(), items.size());
     }
 
     @Override

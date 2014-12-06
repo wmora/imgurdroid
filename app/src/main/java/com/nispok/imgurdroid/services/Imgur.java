@@ -7,6 +7,7 @@ import com.nispok.imgurdroid.BuildConfig;
 import com.nispok.imgurdroid.events.BusProvider;
 import com.nispok.imgurdroid.events.ImgurServiceEvents;
 import com.nispok.imgurdroid.models.Gallery;
+import com.nispok.imgurdroid.models.GalleryInfo;
 
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
@@ -97,8 +98,8 @@ public class Imgur {
 
         if (restAdapter == null) {
             Gson gson = new GsonBuilder()
-                         .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                         .create();
+                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                    .create();
             restAdapter = new RestAdapter.Builder()
                     .setEndpoint(BuildConfig.IMGUR_API_BASE_URL)
                     .setRequestInterceptor(new ImgurRequestInterceptor())
@@ -124,14 +125,14 @@ public class Imgur {
      * <a href="https://api.imgur.com/3/gallery/hot/viral/0.json" />
      *
      * @param section   hot | top | user. @see {@link Section}
-     * @param sort      viral | top | time | rising (only available with user section).
+     * @param sort      viral | top | time | rising (only available with user section). @see
+     *                  {@link Sort}
      * @param window    Change the date range of the request if the section is "top", day | week |
      *                  month | year | all. @see {@link Window}
      * @param page      integer - the data paging number
-     * @param showViral true | false - Show or hide viral images from the 'user' section. @see
-     *                  {@link Sort}
+     * @param showViral true | false - Show or hide viral images from the 'user' section.
      */
-    public static void getGallery(String section, String sort, String window, int page,
+    private static void getGallery(String section, String sort, String window, int page,
                                   boolean showViral) {
         getService().getGallery(section, sort, window, page, showViral,
                 new ImgurCallback<Gallery>() {
@@ -143,11 +144,23 @@ public class Imgur {
     }
 
     /**
+     * /**
+     * Returns the images in the gallery. For example the main gallery is
+     * <a href="https://api.imgur.com/3/gallery/hot/viral/0.json" />
+     *
+     * @param galleryInfo request info
+     */
+    public static void getGallery(GalleryInfo galleryInfo) {
+        getGallery(galleryInfo.getSection(), galleryInfo.getSort(), galleryInfo.getWindow(),
+                galleryInfo.getPage(), galleryInfo.showViral());
+    }
+
+    /**
      * Returns the images in the gallery. For example the main gallery is
      * <a href="https://api.imgur.com/3/gallery/hot/viral/0.json" />
      */
     public static void getGallery() {
-        getGallery(Section.HOT, Sort.VIRAL, Window.DAY, 0, true);
+        getGallery(new GalleryInfo());
     }
 
 }
