@@ -9,6 +9,10 @@ import com.nispok.imgurdroid.events.ImgurServiceEvents;
 import com.nispok.imgurdroid.models.Gallery;
 import com.nispok.imgurdroid.models.GalleryInfo;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
@@ -25,6 +29,10 @@ public class Imgur {
         public static final String HOT = "hot";
         public static final String TOP = "top";
         public static final String USER = "user";
+
+        public static List<String> getSections() {
+            return new ArrayList<>(Arrays.asList(HOT, TOP, USER));
+        }
     }
 
     public static class Sort {
