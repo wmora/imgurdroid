@@ -40,6 +40,10 @@ public class Imgur {
         public static final String TOP = "top";
         public static final String TIME = "time";
         public static final String RISING = "rising";
+
+        public static List<String> getSorts() {
+            return new ArrayList<>(Arrays.asList(VIRAL, TOP, TIME, RISING));
+        }
     }
 
     public static class Window {
@@ -48,6 +52,10 @@ public class Imgur {
         public static final String MONTH = "month";
         public static final String YEAR = "year";
         public static final String ALL = "all";
+
+        public static List<String> getWindows() {
+            return new ArrayList<>(Arrays.asList(DAY, WEEK, MONTH, YEAR, ALL));
+        }
     }
 
     private static RestAdapter restAdapter;
