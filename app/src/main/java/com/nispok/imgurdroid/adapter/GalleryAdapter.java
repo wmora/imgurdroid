@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.nispok.imgurdroid.R;
 import com.nispok.imgurdroid.models.GalleryResult;
@@ -26,6 +27,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
 
     /**
      * Adds all items to the end of the list
+     *
      * @param items items to be inserted
      */
     public void add(List<GalleryResult> items) {
@@ -53,13 +55,20 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
     public static class GalleryViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView galleryResultImage;
+        private TextView galleryResultTitle;
 
         public GalleryViewHolder(View itemView) {
             super(itemView);
             galleryResultImage = (ImageView) itemView.findViewById(R.id.gallery_result_image);
+            galleryResultTitle = (TextView) itemView.findViewById(R.id.gallery_result_title);
         }
 
         public void updateView(GalleryResult galleryResult) {
+            updateImage(galleryResult);
+            updateTitle(galleryResult);
+        }
+
+        private void updateImage(GalleryResult galleryResult) {
             Picasso.with(itemView.getContext())
                     .cancelRequest(galleryResultImage);
 
@@ -72,6 +81,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
                     .load(galleryResult.getImageUrl())
                     .transform(new ImageTransformation(itemView, galleryResult.getImageUrl()))
                     .into(galleryResultImage);
+
+        }
+
+        private void updateTitle(GalleryResult galleryResult) {
+            galleryResultTitle.setText(galleryResult.getTitle());
         }
     }
 
