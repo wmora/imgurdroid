@@ -21,10 +21,10 @@ import com.nispok.imgurdroid.models.Gallery;
 import com.nispok.imgurdroid.models.GalleryInfo;
 import com.nispok.imgurdroid.services.Imgur;
 
-public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
+public class GalleryContentFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
         OnGalleryScrollListener.GalleryScrollListener {
 
-    private static final String TAG = HomeFragment.class.getSimpleName();
+    private static final String TAG = GalleryContentFragment.class.getSimpleName();
     private static final String SAVED_GALLERY_DATA = "SAVED_GALLERY_DATA";
     private static final String SAVED_GALLERY_INFO = "SAVED_GALLERY_INFO";
 
@@ -44,7 +44,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             galleryInfo = (GalleryInfo) savedInstanceState.getSerializable(SAVED_GALLERY_INFO);
         }
 
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_gallery_content, container, false);
 
         loadViews(view);
 

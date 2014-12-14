@@ -5,7 +5,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.nispok.imgurdroid.R;
-import com.nispok.imgurdroid.fragments.HomeFragment;
+import com.nispok.imgurdroid.fragments.GalleryContentFragment;
 
 public class HomeActivity extends ActionBarActivity {
 
@@ -15,7 +15,7 @@ public class HomeActivity extends ActionBarActivity {
         setContentView(R.layout.activity_home);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new HomeFragment())
+                    .add(R.id.container, new GalleryContentFragment())
                     .commit();
         }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
