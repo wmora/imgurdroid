@@ -1,4 +1,4 @@
-package com.nispok.imgurdroid.adapter;
+package com.nispok.imgurdroid.adapters;
 
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
