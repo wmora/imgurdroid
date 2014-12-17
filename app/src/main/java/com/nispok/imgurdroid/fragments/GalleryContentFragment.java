@@ -1,6 +1,7 @@
 package com.nispok.imgurdroid.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.halfbit.tinybus.Subscribe;
 import com.nispok.imgurdroid.R;
-import com.nispok.imgurdroid.adapter.GalleryAdapter;
+import com.nispok.imgurdroid.adapters.GalleryAdapter;
 import com.nispok.imgurdroid.events.BusProvider;
 import com.nispok.imgurdroid.events.ImgurServiceEvents;
 import com.nispok.imgurdroid.listeners.OnGalleryScrollListener;
@@ -25,6 +26,9 @@ public class GalleryContentFragment extends Fragment implements SwipeRefreshLayo
         OnGalleryScrollListener.GalleryScrollListener {
 
     private static final String TAG = GalleryContentFragment.class.getSimpleName();
+
+    public static final String EXTRA_GALLERY_SECTION = "EXTRA_GALLERY_SECTION";
+
     private static final String SAVED_GALLERY_DATA = "SAVED_GALLERY_DATA";
     private static final String SAVED_GALLERY_INFO = "SAVED_GALLERY_INFO";
 
@@ -34,10 +38,13 @@ public class GalleryContentFragment extends Fragment implements SwipeRefreshLayo
     private Gallery galleryData = new Gallery();
     private GalleryInfo galleryInfo = new GalleryInfo();
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+
+        if (getArguments() != null) {
+            loadValuesFromArguments(getArguments());
+        }
 
         if (savedInstanceState != null) {
             galleryData = (Gallery) savedInstanceState.getSerializable(SAVED_GALLERY_DATA);
@@ -49,6 +56,10 @@ public class GalleryContentFragment extends Fragment implements SwipeRefreshLayo
         loadViews(view);
 
         return view;
+    }
+
+    private void loadValuesFromArguments(@NonNull Bundle arguments) {
+        galleryInfo.setSection(arguments.getString(EXTRA_GALLERY_SECTION));
     }
 
     private void loadViews(View container) {
@@ -83,6 +94,8 @@ public class GalleryContentFragment extends Fragment implements SwipeRefreshLayo
         BusProvider.bus().register(this);
         if (shouldLoadGallery()) {
             loadGallery();
+        } else {
+            galleryAdapter.add(galleryData.getData());
         }
     }
 
