@@ -8,9 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.android.views.SlidingTabLayout;
 import com.nispok.imgurdroid.R;
 import com.nispok.imgurdroid.adapters.GalleryPagerAdapter;
+import com.nispok.views.SlidingTabLayout;
 
 public class HomeFragment extends Fragment {
 

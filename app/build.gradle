@@ -46,5 +46,6 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.1.0'
     compile 'com.squareup.okio:okio:1.1.0'
     compile 'com.squareup.picasso:picasso:2.4.0'
+    compile 'com.nispok:slidingtabs:1.0.0'
     compile 'de.halfbit:tinybus:2.0.2'
 }
