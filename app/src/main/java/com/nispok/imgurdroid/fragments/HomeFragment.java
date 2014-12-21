@@ -31,6 +31,7 @@ public class HomeFragment extends Fragment {
         SlidingTabLayout slidingTabLayout = (SlidingTabLayout) view.findViewById(R.id.sliding_tabs);
         slidingTabLayout.setDistributeEvenly(true);
         slidingTabLayout.setViewPager(viewPager);
+        slidingTabLayout.setSelectedIndicatorColors(getResources().getColor(R.color.imgur_green));
     }
 
 }
