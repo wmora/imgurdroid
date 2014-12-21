@@ -35,6 +35,14 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
         notifyItemRangeInserted(dataset.size() - items.size(), items.size());
     }
 
+    /**
+     * Clears all items in lists
+     */
+    public void clear() {
+        dataset.clear();
+        notifyDataSetChanged();
+    }
+
     @Override
     public GalleryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_gallery_result,
