@@ -75,7 +75,18 @@ public class GalleryContentFragment extends Fragment implements SwipeRefreshLayo
 
     @Override
     public void onRefresh() {
+        resetGalleryInfo();
+        resetGallery();
         loadGallery();
+    }
+
+    private void resetGalleryInfo() {
+        galleryInfo.setPage(0);
+    }
+
+    private void resetGallery() {
+        galleryData = new Gallery();
+        galleryAdapter.clear();
     }
 
     private void loadGalleryView(View container) {
