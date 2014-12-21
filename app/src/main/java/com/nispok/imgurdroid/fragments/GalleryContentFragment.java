@@ -91,12 +91,25 @@ public class GalleryContentFragment extends Fragment implements SwipeRefreshLayo
     @Override
     public void onResume() {
         super.onResume();
-        BusProvider.bus().register(this);
+        registerToBuses();
         if (shouldLoadGallery()) {
             loadGallery();
         } else {
             galleryAdapter.add(galleryData.getData());
         }
+    }
+
+    private void registerToBuses() {
+        registerToSectionBus();
+        registerToErrorBus();
+    }
+
+    private void registerToSectionBus() {
+        BusProvider.bus(galleryInfo.getSection()).register(this);
+    }
+
+    private void registerToErrorBus() {
+        BusProvider.bus(BusProvider.ERROR_BUS_KEY).register(this);
     }
 
     private boolean shouldLoadGallery() {
@@ -111,7 +124,20 @@ public class GalleryContentFragment extends Fragment implements SwipeRefreshLayo
     @Override
     public void onPause() {
         super.onPause();
-        BusProvider.bus().unregister(this);
+        unregisterFromBuses();
+    }
+
+    private void unregisterFromBuses() {
+        unregisterFromSectionBus();
+        unregisterFromErrorBus();
+    }
+
+    private void unregisterFromSectionBus() {
+        BusProvider.bus(galleryInfo.getSection()).unregister(this);
+    }
+
+    private void unregisterFromErrorBus() {
+        BusProvider.bus(BusProvider.ERROR_BUS_KEY).unregister(this);
     }
 
     @Override

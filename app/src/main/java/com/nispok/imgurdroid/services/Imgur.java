@@ -106,7 +106,8 @@ public class Imgur {
 
         @Override
         public void failure(RetrofitError error) {
-            BusProvider.bus().post(new ImgurServiceEvents.ErrorEvent(error));
+            BusProvider.bus(BusProvider.ERROR_BUS_KEY).post(
+                    new ImgurServiceEvents.ErrorEvent(error));
         }
     }
 
@@ -148,19 +149,19 @@ public class Imgur {
      * @param page      integer - the data paging number
      * @param showViral true | false - Show or hide viral images from the 'user' section.
      */
-    private static void getGallery(String section, String sort, String window, int page,
-                                  boolean showViral) {
+    private static void getGallery(final String section, String sort, String window, int page,
+                                   boolean showViral) {
         getService().getGallery(section, sort, window, page, showViral,
                 new ImgurCallback<Gallery>() {
                     @Override
                     public void success(Gallery result) {
-                        BusProvider.bus().post(new ImgurServiceEvents.GallerySuccessEvent(result));
+                        BusProvider.bus(section).post(
+                                new ImgurServiceEvents.GallerySuccessEvent(result));
                     }
                 });
     }
 
     /**
-     * /**
      * Returns the images in the gallery. For example the main gallery is
      * <a href="https://api.imgur.com/3/gallery/hot/viral/0.json" />
      *
