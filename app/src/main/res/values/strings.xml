@@ -4,4 +4,8 @@
     <string name="app_name">Imgurdroid</string>
     <string name="action_settings">Settings</string>
 
+    <!-- SettingsActivity -->
+    <string name="title_settings">Settings</string>
+    <string name="show_nsfw_posts">Show NSFW posts</string>
+
 </resources>
