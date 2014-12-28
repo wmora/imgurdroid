@@ -3,6 +3,8 @@ package com.nispok.imgurdroid.models;
 import java.io.Serializable;
 import java.util.List;
 
+import static com.nispok.imgurdroid.managers.SettingsManager.isNsfwEnabled;
+
 /**
  * A {@link com.nispok.imgurdroid.models.GalleryResult} can be either a
  * <a href="https://api.imgur.com/models/gallery_image">Gallery Image</a> or a
@@ -445,5 +447,13 @@ public class GalleryResult implements Serializable {
     public int getImageHeight() {
         int imageHeight = isAlbum ? coverHeight : height;
         return imageHeight <= 640 ? imageHeight : 640;
+    }
+
+    /**
+     * @return whether the content is NSFW and the app settings disabled this type of content
+     * @see com.nispok.imgurdroid.managers.SettingsManager#isNsfwEnabled()
+     */
+    public boolean shouldDisplayNsfwWarning() {
+        return nsfw && !isNsfwEnabled();
     }
 }

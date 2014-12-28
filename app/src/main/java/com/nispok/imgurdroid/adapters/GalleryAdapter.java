@@ -80,6 +80,12 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
             Picasso.with(itemView.getContext())
                     .cancelRequest(galleryResultImage);
 
+            if (galleryResult.shouldDisplayNsfwWarning()) {
+                Picasso.with(itemView.getContext())
+                        .load(R.drawable.ic_launcher)
+                        .into(galleryResultImage);
+            }
+
             ViewGroup.LayoutParams params = galleryResultImage.getLayoutParams();
             params.height = galleryResult.getImageHeight();
 
@@ -93,6 +99,10 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryV
         }
 
         private void updateTitle(GalleryResult galleryResult) {
+            if (galleryResult.shouldDisplayNsfwWarning()) {
+                galleryResultTitle.setText(itemView.getContext().getText(R.string.nsfw_text));
+                return;
+            }
             galleryResultTitle.setText(galleryResult.getTitle());
         }
     }

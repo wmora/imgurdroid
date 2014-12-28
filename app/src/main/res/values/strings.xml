@@ -4,6 +4,9 @@
     <string name="app_name" translatable="false">Imgurdroid</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Gallery -->
+    <string name="nsfw_text">NSFW</string>
+
     <!-- Settings Preferences -->
     <string name="settings_preferences_key" translatable="false">com.nispok.imgurdroid.SETTINGS</string>
     <string name="settings_nsfw_enabled_key" translatable="false">nsfw_enabled</string>

@@ -25,11 +25,18 @@ public class SettingsManager {
         return getSettingsPreferences().edit();
     }
 
+    /**
+     * @return if NSFW is enabled for this app. Defaults to true
+     */
     public static boolean isNsfwEnabled() {
         return getSettingsPreferences().getBoolean(getString(R.string.settings_nsfw_enabled_key),
-                false);
+                true);
     }
 
+    /**
+     * Changes NSFW setting for the app
+     * @param nsfwEnabled true if NSFW should be enabled
+     */
     public static void setNsfwEnabled(boolean nsfwEnabled) {
         getEditor().putBoolean(getString(R.string.settings_nsfw_enabled_key), nsfwEnabled).commit();
     }
